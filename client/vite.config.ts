@@ -1,10 +1,16 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react'; // keep this if you’re using JSX
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src') // <-- THIS tells Vite @ = src
+    }
+  },
   build: {
-    outDir: 'dist',   // Output folder for Vercel
+    outDir: 'dist',
     emptyOutDir: true
   }
 });

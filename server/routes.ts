@@ -94,6 +94,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/', (req, res) => {
+    res.send({
+      activeStatus: true,
+      error: false,
+    })
+  })
+
   app.get("/api/scan/:id", async (req, res) => {
     try {
       const result = await storage.getScanResult(req.params.id);

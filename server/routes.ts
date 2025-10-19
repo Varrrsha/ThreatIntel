@@ -6,7 +6,7 @@ import { batchScanRequestSchema } from "./schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiKey = process.env.VIRUSTOTAL_API_KEY;
-  
+
   if (!apiKey) {
     console.error("WARNING: VIRUSTOTAL_API_KEY not set. API will return errors.");
   }
@@ -78,6 +78,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+
+  app.get('/', (req, res) => {
+    res.send({
+      activeStatus: true,
+      error: false,
+    })
+  })
 
   app.get("/api/scans", async (req, res) => {
     try {

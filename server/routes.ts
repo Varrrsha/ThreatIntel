@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { VirusTotalService } from "./virustotal";
-import { batchScanRequestSchema } from "server/schema";
+import { batchScanRequestSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiKey = process.env.VIRUSTOTAL_API_KEY;

@@ -1,7 +1,7 @@
 import express from "express";
 import serverless from "serverless-http";
 import dotenv from "dotenv";
-import { registerRoutes } from "./routes.js";
+import { registerRoutes } from "./routes.ts";
 
 dotenv.config();
 

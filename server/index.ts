@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // register routes directly (no async wrapper)
-// registerRoutes(app);
+registerRoutes(app);
 
 app.get("/", (req, res) => {
   res.json({ message: "Backend is live 🚀" });

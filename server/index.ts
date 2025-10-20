@@ -1,7 +1,7 @@
+import express from "express";
 import serverless from "serverless-http";
 import dotenv from "dotenv";
-import express, { Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
+import { registerRoutes } from "./routes.ts";
 
 dotenv.config();
 
@@ -17,8 +17,8 @@ app.get("/", (req, res) => {
 });
 
 // error handler
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error(err);
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
   res.status(500).json({ message: "Internal Server Error" });
 });
 

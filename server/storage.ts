@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type ScanResult, type InsertScanResult } from "./schema";
+import { type User, type InsertUser, type ScanResult, type InsertScanResult } from "server/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {

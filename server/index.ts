@@ -1,7 +1,7 @@
-import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
-import dotenv from 'dotenv';
+import express from "express";
 import serverless from "serverless-http";
+import dotenv from "dotenv";
+import { registerRoutes } from "./routes.js";
 
 dotenv.config();
 
@@ -9,45 +9,17 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(async (req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+// register routes directly (no async wrapper)
+registerRoutes(app);
 
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      // console.log(logLine);
-    }
-  });
-
-  next();
+app.get("/", (req, res) => {
+  res.json({ message: "Backend is live 🚀" });
 });
 
-(async () => {
-  await registerRoutes(app);
-})();
-
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  const status = err.status || err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
-  res.status(status).json({ message });
+// error handler
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ message: "Internal Server Error" });
 });
 
-// 👇 THIS is the key for Vercel:
 export const handler = serverless(app);

@@ -1,10 +1,9 @@
 import type { Express } from "express";
-import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { VirusTotalService } from "./virustotal";
 import { batchScanRequestSchema } from "./schema";
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express): Promise<void> {
   const apiKey = process.env.VIRUSTOTAL_API_KEY;
 
   if (!apiKey) {
@@ -30,9 +29,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { indicators } = validation.data;
-      
       const { results, errors } = await vtService.checkBatch(indicators);
-      
+
       if (errors.length > 0 && results.length === 0) {
         return res.status(429).json({ 
           error: "Scan failed",
@@ -52,6 +50,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             vendorResults: result.vendorResults as any,
             rawResponse: null,
           });
+
           return {
             id: scanResult.id,
             indicator: scanResult.indicator,
@@ -83,8 +82,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.send({
       activeStatus: true,
       error: false,
-    })
-  })
+    });
+  });
 
   app.get("/api/scans", async (req, res) => {
     try {
@@ -116,8 +115,4 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to retrieve scan" });
     }
   });
-
-  const httpServer = createServer(app);
-
-  return httpServer;
 }

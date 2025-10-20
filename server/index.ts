@@ -1,7 +1,7 @@
-import express, { Request, Response, NextFunction } from "express";
-import dotenv from "dotenv";
-import serverless from "serverless-http";
+import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
+import dotenv from 'dotenv';
+import serverless from "serverless-http";
 
 dotenv.config();
 
@@ -9,8 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Logging middleware
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   const start = Date.now();
   const path = req.path;
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
@@ -32,22 +31,23 @@ app.use((req, res, next) => {
       if (logLine.length > 80) {
         logLine = logLine.slice(0, 79) + "…";
       }
-      console.log(logLine);
+
+      // console.log(logLine);
     }
   });
 
   next();
 });
 
-// Register routes (no manual listen)
-registerRoutes(app);
+(async () => {
+  await registerRoutes(app);
+})();
 
-// Error handler
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   const status = err.status || err.statusCode || 500;
   const message = err.message || "Internal Server Error";
   res.status(status).json({ message });
 });
 
-// Export the app for Vercel (no .listen!)
+// 👇 THIS is the key for Vercel:
 export const handler = serverless(app);

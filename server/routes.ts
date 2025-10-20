@@ -78,12 +78,12 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  app.get('/', (req, res) => {
-    res.send({
-      activeStatus: true,
-      error: false,
-    });
-  });
+  // app.get('/', (req, res) => {
+  //   res.send({
+  //     activeStatus: true,
+  //     error: false,
+  //   });
+  // });
 
   app.get("/api/scans", async (req, res) => {
     try {

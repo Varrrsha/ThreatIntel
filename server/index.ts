@@ -1,25 +1,27 @@
 import express from "express";
-import serverless from "serverless-http";
 import dotenv from "dotenv";
 import { registerRoutes } from "./routes.js";
 
 dotenv.config();
 
 const app = express();
+
+// log + finish
+app.use((req, res, next) => {
+  const t0 = Date.now();
+  console.log(`➡️ ${req.method} ${req.url}`);
+  res.on("finish", () => console.log(`✅ ${req.method} ${req.url} → ${res.statusCode} (${Date.now()-t0}ms)`));
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// register routes directly (no async wrapper)
-registerRoutes(app);
+await registerRoutes(app); // mounts /api/*
 
-app.get("/", (req, res) => {
-  res.json({ message: "Backend is live 🚀" });
-});
+app.get("/api/health", (_req, res) => res.status(200).json({ ok: true, ts: new Date().toISOString() }));
+app.get("/", (_req, res) => res.status(200).json({ message: "Backend is live 🚀" }));
+app.use((req, res) => res.status(404).json({ error: "Not Found" }));
 
-// error handler
-app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err);
-  res.status(500).json({ message: "Internal Server Error" });
-});
-
-export default serverless(app);
+// Export the app (NO serverless-http)
+export default app;
